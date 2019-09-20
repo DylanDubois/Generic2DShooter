@@ -14,6 +14,10 @@ function setup() {
   settings.enemySpawnCoords = [
     { x: -50, y: -50 },
     { x: width + 50, y: -50 },
+    { x: width / 2, y: -50 },
+    { x: width / 2, y: height + 50},
+    { x: -50 + 50, y: height / 2 },
+    { x: width + 50, y: height / 2 },
     { x: -50, y: height + 50 },
     { x: width + 50, y: height + 50 }]
   player = new Player(width / 2, height / 2);
