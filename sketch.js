@@ -35,7 +35,10 @@ function draw() {
     updateEnemies();
   }
   else if (settings.paused) {
-    background(255);
+    background(48);
+    textSize(100);
+    fill(255);
+    text("PAUSED", 50, height / 2);
   }
   else {
     background(48);
@@ -224,7 +227,7 @@ class BasicEnemy {
   }
 
   drawEnemy = () => {
-    fill(255, 0, 0);
+    fill((this.health / this.maxHealth) * 255, 0, 0);
     circle(this.xPos, this.yPos, this.enemyDiameter);
   }
 
