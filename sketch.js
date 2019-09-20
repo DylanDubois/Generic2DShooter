@@ -45,6 +45,9 @@ function draw() {
     textSize(100);
     fill(255, 0, 0);
     text("YOU LOSE", 50, height / 2);
+    textSize(30);
+    fill(255, 0, 0);
+    text("You survived until round " + player.playerLevel, 70, height / 2 + 100);
   }
 }
 
@@ -202,6 +205,7 @@ class Player {
           this.damage -= 10;
         }
       }
+      settings.maxBasicEnemies += 1;
       this.xpLevel = 0;
       this.xpLevelNext *= 1.1;
     }
