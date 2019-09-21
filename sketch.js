@@ -15,7 +15,7 @@ function setup() {
     { x: -50, y: -50 },
     { x: width + 50, y: -50 },
     { x: width / 2, y: -50 },
-    { x: width / 2, y: height + 50},
+    { x: width / 2, y: height + 50 },
     { x: -50 + 50, y: height / 2 },
     { x: width + 50, y: height / 2 },
     { x: -50, y: height + 50 },
@@ -30,6 +30,7 @@ function draw() {
     // RENDERING
     player.drawPlayer();
     this.drawBasicShots();
+    this.drawPortals();
     this.drawEnemies();
 
     this.drawUI();
@@ -56,20 +57,25 @@ function draw() {
 }
 
 drawUI = () => {
-  // Shots
-  fill(255);
-  textSize(22);
-  text(player.playerShotsMax - player.playerShots.length + '/' + player.playerShotsMax, 20, 20, 200, 200);
+  //Shots
+  // fill(255);
+  // textSize(22);
+  // text(player.playerShotsMax - player.playerShots.length + '/' + player.playerShotsMax, 20, 60, 200, 200);
+
+  for (let i = 0; i < player.playerShotsMax - player.playerShots.length; i++) {
+    fill(255, 0, 255);
+    circle((i * 20) + 30, 60, 10);
+  }
 
   // Health
   fill(255, 0, 0);
-  rect(90, 20, (player.health / player.maxHealth) * 100, 20);
+  rect(20, 20, (player.health / player.maxHealth) * 100, 20);
 
   // Progress Bar
   fill(0, 200, 100);
-  rect(230, 20, (player.xpLevel / player.xpLevelNext) * 100, 20);
+  rect(160, 20, (player.xpLevel / player.xpLevelNext) * 100, 20);
   textSize(22);
-  text(player.playerLevel, 340, 20, 200, 200);
+  text(player.playerLevel, 270, 20, 200, 200);
 }
 
 drawEnemies = () => {
@@ -93,6 +99,7 @@ function keyPressed() {
   if (keyCode === 65) player.movePlayerX(-1);
   if (keyCode === 68) player.movePlayerX(1);
   if (keyCode === 83) player.movePlayerY(1);
+  if (keyCode === 32) player.spaceHeld = true;
   if (keyCode === 80) settings.paused = !settings.paused;
 }
 
@@ -102,6 +109,7 @@ function keyReleased() {
   if (keyCode === 65) player.movePlayerX(-1);
   if (keyCode === 68) player.movePlayerX(1);
   if (keyCode === 83) player.movePlayerY(1);
+  if (keyCode === 32) player.spaceHeld = false;
 }
 
 function mouseClicked() {
@@ -128,7 +136,29 @@ drawBasicShots = () => {
         }
       }
     });
-    fill(255);
+    fill(255, 0, 255);
+    circle(shot.xPos, shot.yPos, shot.shotWidth);
+  })
+}
+
+drawPortals = () => {
+  //console.log(player.portals);
+  player.portals.forEach((shot, index) => {
+    if (index === 0) fill(255, 140, 0);
+    else fill(30, 144, 255);
+    if (!shot.moving) {
+      if (collideCircleCircle(shot.xPos, shot.yPos, shot.shotWidth, player.xPos, player.yPos, player.playerDiameter) && player.portals.length == 2) {
+        console.log("entered portal");
+        player.enterPortal(index);
+      }
+      circle(shot.xPos, shot.yPos, shot.shotWidth);
+      return;
+    }
+    shot.xPos += shot.xVel;
+    shot.yPos += shot.yVel;
+    if (shot.xPos > width || shot.xPos < 0 || shot.yPos > height || shot.yPos < 0) {
+      shot.moving = false;
+    }
     circle(shot.xPos, shot.yPos, shot.shotWidth);
   })
 }
@@ -144,11 +174,13 @@ class Player {
   yPos;
   health;
   damage = 50;
+  spaceHeld = false;
   maxHealth = 100;
   xpLevel = 0;
   playerLevel = 1;
   xpLevelNext = 100;
   playerShots = [];
+  portals = [];
   playerShotsMax = 5;
   enemySpeed = 6;
   playerDiameter = 30;
@@ -192,8 +224,27 @@ class Player {
   }
 
   shoot = (x, y) => {
+    if (this.spaceHeld) {
+      this.shootPortal(x, y);
+      return;
+    }
     if (this.playerShots.length >= this.playerShotsMax) return;
     this.playerShots.push(new BasicShot(this.xPos, this.yPos, x, y));
+  }
+
+  enterPortal = (index) => {
+    console.log("entered portal", index);
+    let enteredPortal;
+    enteredPortal = index === 0 ? this.portals[1] : this.portals[0];
+    this.portals = [];
+    this.xPos = enteredPortal.xPos;
+    this.yPos = enteredPortal.yPos;
+  }
+
+  shootPortal = (x, y) => {
+    //console.log("Portal Shot", this.portals.length);
+    if (this.portals.length > 1) return;
+    this.portals.push(new PortalShot(this.xPos, this.yPos, x, y));
   }
 
   updatePlayerLevel = (xpUpgrade) => {
@@ -281,4 +332,23 @@ class BasicShot {
     this.yVel = Math.sin(radians) * this.shotSpeed;
   }
 
+}
+
+class PortalShot {
+  moving = true;
+  xPos;
+  yPos;
+  xVel;
+  yVel;
+  shotSpeed = 5;
+  shotWidth = 40;
+  constructor(pX, pY, sX, sY) {
+    console.log(pX, pY, sX, sY);
+    this.xPos = pX;
+    this.yPos = pY;
+    const radians = Math.atan2(sY - pY, sX - pX);
+    // we now have our velX and velY we can just refer to
+    this.xVel = Math.cos(radians) * this.shotSpeed;
+    this.yVel = Math.sin(radians) * this.shotSpeed;
+  }
 }
