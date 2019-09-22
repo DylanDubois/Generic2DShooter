@@ -1,9 +1,11 @@
 
 let player;
 let basicEnemies = [];
+let bossEnemies = [];
 
 let settings = {
   maxBasicEnemies: 5,
+  maxBossEnemies: 1,
   paused: false,
   gameOver: false,
   enemySpawnCoords: []
@@ -21,7 +23,8 @@ function setup() {
     { x: -50, y: height + 50 },
     { x: width + 50, y: height + 50 }]
   player = new Player(width / 2, height / 2);
-  basicEnemies.push(new BasicEnemy(-50, -50));
+  //basicEnemies.push(new BasicEnemy(-50, -50));
+  //bossEnemies.push(new BossEnemy(100, 100));
 }
 
 function draw() {
@@ -82,6 +85,11 @@ drawEnemies = () => {
   basicEnemies.forEach((en, index) => {
     en.drawEnemy();
     en.updateEnemy();
+  });
+
+  bossEnemies.forEach((en, index) => {
+    en.drawEnemy();
+    en.updateEnemy();
   })
 }
 
@@ -90,6 +98,11 @@ function updateEnemies() {
   while (basicEnemies.length < settings.maxBasicEnemies) {
     randomEnemyCoord = settings.enemySpawnCoords[Math.floor(Math.random() * settings.enemySpawnCoords.length)]
     basicEnemies.push(new BasicEnemy(randomEnemyCoord.x, randomEnemyCoord.y));
+  }
+
+  while (player.playerLevel >= 5 && bossEnemies.length < settings.maxBossEnemies) {
+    randomEnemyCoord = settings.enemySpawnCoords[Math.floor(Math.random() * settings.enemySpawnCoords.length)]
+    bossEnemies.push(new BossEnemy(randomEnemyCoord.x, randomEnemyCoord.y));
   }
 }
 
@@ -132,6 +145,16 @@ drawBasicShots = () => {
         player.playerShots.splice(index, 1);
         if (en.detectHit(player.damage)) {
           basicEnemies.splice(i, 1);
+          player.updatePlayerLevel(en.xpPoints);
+        }
+      }
+    });
+
+    bossEnemies.forEach((en, i) => {
+      if (collideCircleCircle(shot.xPos, shot.yPos, shot.shotWidth, en.xPos, en.yPos, en.enemyDiameter)) {
+        player.playerShots.splice(index, 1);
+        if (en.detectHit(player.damage)) {
+          bossEnemies.splice(i, 1);
           player.updatePlayerLevel(en.xpPoints);
         }
       }
@@ -194,7 +217,7 @@ class Player {
   }
 
   drawPlayer = () => {
-    fill(212, 234, 121);
+    fill(0, 191, 255);
     circle(this.xPos, this.yPos, this.playerDiameter);
   }
 
@@ -277,6 +300,7 @@ class BasicEnemy {
   maxHealth = 100;
   xpPoints = 10;
   enemySpeed = 2;
+  enemyDamage = 1;
   enemyDiameter = 30;
 
   constructor(x, y) {
@@ -286,7 +310,7 @@ class BasicEnemy {
   }
 
   drawEnemy = () => {
-    fill((this.health / this.maxHealth) * 255, 0, 0);
+    fill((this.health / this.maxHealth) * 200, 0, 0);
     circle(this.xPos, this.yPos, this.enemyDiameter);
   }
 
@@ -294,7 +318,7 @@ class BasicEnemy {
   updateEnemy = () => {
     if (collideCircleCircle(player.xPos, player.yPos, player.playerDiameter, this.xPos, this.yPos, this.enemyDiameter)) {
       console.log("ATTACK");
-      player.health -= 1;
+      player.health -= this.enemyDamage;
       if (player.health <= 0) {
         triggerGameOver();
       }
@@ -313,6 +337,23 @@ class BasicEnemy {
     return this.health <= 0;
   }
 
+}
+
+class BossEnemy extends BasicEnemy {
+  constructor(x, y) {
+    super(x, y);
+    this.health = 1000;
+    this.maxHealth = 1000;
+    this.enemyDiameter = 70;
+    this.enemyDamage = 2;
+    this.xpPoints = 50;
+    this.enemySpeed = 2.1;
+  }
+
+  drawEnemy = () => {
+    fill((this.health / this.maxHealth) * 200, 200, 0);
+    circle(this.xPos, this.yPos, this.enemyDiameter);
+  }
 }
 
 class BasicShot {
