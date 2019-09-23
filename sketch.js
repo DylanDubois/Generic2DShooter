@@ -283,6 +283,9 @@ class Player {
           this.damage -= 10;
         }
       }
+      if (this.playerLevel % 10 === 0) {
+        settings.maxBossEnemies += 1;
+      }
       settings.maxBasicEnemies += 1;
       this.xpLevel = 0;
       this.xpLevelNext *= 1.1;
