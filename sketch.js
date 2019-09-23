@@ -205,7 +205,7 @@ class Player {
   playerShots = [];
   portals = [];
   playerShotsMax = 5;
-  enemySpeed = 6;
+  playerSpeed = 5;
   playerDiameter = 30;
   xDirections = [];
   yDirections = [];
@@ -238,8 +238,8 @@ class Player {
   }
 
   updatePlayer = () => {
-    this.yDirections.forEach(dir => this.yPos += dir * this.enemySpeed);
-    this.xDirections.forEach(dir => this.xPos += dir * this.enemySpeed);
+    this.yDirections.forEach(dir => this.yPos += dir * this.playerSpeed);
+    this.xDirections.forEach(dir => this.xPos += dir * this.playerSpeed);
     if (this.yPos > height) this.yPos = height;
     else if (this.yPos < 0) this.yPos = 0;
     if (this.xPos > width) this.xPos = width;
@@ -299,7 +299,7 @@ class BasicEnemy {
   health = 100;
   maxHealth = 100;
   xpPoints = 10;
-  enemySpeed = 2;
+  enemySpeed = 2.5;
   enemyDamage = 1;
   enemyDiameter = 30;
 
@@ -347,7 +347,7 @@ class BossEnemy extends BasicEnemy {
     this.enemyDiameter = 70;
     this.enemyDamage = 2;
     this.xpPoints = 50;
-    this.enemySpeed = 2.1;
+    this.enemySpeed = 3;
   }
 
   drawEnemy = () => {
