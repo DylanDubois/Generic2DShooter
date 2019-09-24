@@ -187,8 +187,10 @@ drawPortals = () => {
 }
 
 function triggerGameOver() {
+  if (settings.gameOver) return;
   console.log("YOU LOSE");
   settings.gameOver = true;
+  updateHighScores(player.playerLevel);
 }
 
 
