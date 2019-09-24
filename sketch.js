@@ -352,7 +352,7 @@ class BossEnemy extends BasicEnemy {
     this.enemyDiameter = 70;
     this.enemyDamage = 2;
     this.xpPoints = 50;
-    this.enemySpeed = 3;
+    this.enemySpeed = 3.5;
   }
 
   drawEnemy = () => {
