@@ -3,6 +3,7 @@ body {
     flex-direction: column-reverse;
     align-items: center;
     justify-content: center;
+    
     width: 100vw;
     background: #e3e3e3;
     font-family: 'Righteous', cursive;
