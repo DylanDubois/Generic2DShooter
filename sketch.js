@@ -11,6 +11,8 @@ let settings = {
   enemySpawnCoords: []
 }
 
+let startingTime = new Date().getTime() / 1000;
+
 function setup() {
   createCanvas(600, 600);
   settings.enemySpawnCoords = [

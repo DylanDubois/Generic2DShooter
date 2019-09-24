@@ -38,8 +38,9 @@ function updateHighScores(score) {
     let newHighScore = false;
     if (Object.keys(scores).length < 5) {
         let userName = 'Anon';
+        let endTime = new Date().getTime() / 1000;
         userName = prompt('Enter your name');
-        newScore = { name: userName, value: score };
+        newScore = { name: userName, value: score, duration: endTime - startingTime };
         newHighScore = true;
         console.log(newScore);
     } else {
@@ -49,8 +50,9 @@ function updateHighScores(score) {
                 console.log(i);
                 newHighScore = true;
                 let userName = 'Anon';
+                let endTime = new Date().getTime() / 1000;
                 userName = prompt('Enter your name');
-                newScore = { name: userName, value: score };
+                newScore = { name: userName, value: score, duration: endTime - startingTime };
                 console.log(newScore);
             }
         })
@@ -67,10 +69,10 @@ function updateHighScores(score) {
 
     if (newHighScore) {
         $.post('https://generic2dshooter.firebaseio.com/.json',
-        JSON.stringify(newScore),
-        function () {
-        }
-    );
+            JSON.stringify(newScore),
+            function () {
+            }
+        );
     }
 
 }
