@@ -33,12 +33,12 @@ function updateHighScores(score) {
     //   }
     // );
 
+    let newHighScore = false;
     if (Object.keys(scores).length < 5) {
         let userName = 'Anon';
         userName = prompt('Enter your name');
         scores[Date.now()] = { name: userName, value: score };
     } else {
-        let newHighScore = false;
         Object.keys(scores).forEach((s, i) => {
             console.log(scores[s].value);
             if (!newHighScore && score > scores[s].value && i < 5) {
@@ -60,18 +60,19 @@ function updateHighScores(score) {
         finalScores[scoreKey] = scores[scoreKey];
     });
 
-
-    $.ajax({
-        url: 'https://generic2dshooter.firebaseio.com/.json',
-        type: 'DELETE',
-        success: function () {
-            $.post('https://generic2dshooter.firebaseio.com/.json',
-                JSON.stringify(finalScores),
-                function () {
-                }
-            );
-        },
-    });
+    if (newHighScore) {
+        $.ajax({
+            url: 'https://generic2dshooter.firebaseio.com/.json',
+            type: 'DELETE',
+            success: function () {
+                $.post('https://generic2dshooter.firebaseio.com/.json',
+                    JSON.stringify(finalScores),
+                    function () {
+                    }
+                );
+            },
+        });
+    }
 
 
 }
