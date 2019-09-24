@@ -3,8 +3,9 @@ let scoreKeys;
 
 $.getJSON('https://generic2dshooter.firebaseio.com/.json', function (data) {
     //data is the JSON string
-    console.log(data[Object.keys(data)[0]]);
-    scores = data[Object.keys(data)[0]];
+    console.log(data);
+    console.log(data[Object.keys(data)]);
+    scores = data;
 
     setScoresList(scores);
 });
@@ -33,11 +34,14 @@ function updateHighScores(score) {
     //   }
     // );
 
+    let newScore = {};
     let newHighScore = false;
     if (Object.keys(scores).length < 5) {
         let userName = 'Anon';
         userName = prompt('Enter your name');
-        scores[Date.now()] = { name: userName, value: score };
+        newScore = { name: userName, value: score };
+        newHighScore = true;
+        console.log(newScore);
     } else {
         Object.keys(scores).forEach((s, i) => {
             console.log(scores[s].value);
@@ -46,14 +50,15 @@ function updateHighScores(score) {
                 newHighScore = true;
                 let userName = 'Anon';
                 userName = prompt('Enter your name');
-                scores[Date.now()] = { name: userName, value: score };
+                newScore = { name: userName, value: score };
+                console.log(newScore);
             }
         })
     }
 
 
     console.log(scores);
-    let scoreKeys = Object.keys(scores).sort((a, b) => { return scores[b].value - scores[a].value }).slice(0, 5);
+    let scoreKeys = Object.keys(scores).sort((a, b) => { return scores[b].value - scores[a].value });
     console.log(scoreKeys);
     let finalScores = {};
     scoreKeys.forEach(scoreKey => {
@@ -61,19 +66,12 @@ function updateHighScores(score) {
     });
 
     if (newHighScore) {
-        $.ajax({
-            url: 'https://generic2dshooter.firebaseio.com/.json',
-            type: 'DELETE',
-            success: function () {
-                $.post('https://generic2dshooter.firebaseio.com/.json',
-                    JSON.stringify(finalScores),
-                    function () {
-                    }
-                );
-            },
-        });
+        $.post('https://generic2dshooter.firebaseio.com/.json',
+        JSON.stringify(newScore),
+        function () {
+        }
+    );
     }
-
 
 }
 
