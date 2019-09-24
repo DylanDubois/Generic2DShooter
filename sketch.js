@@ -107,26 +107,26 @@ function updateEnemies() {
 }
 
 function keyPressed() {
-  //console.log("PRESSED");
+  ////console.log("PRESSED");
   if (keyCode === 87) player.movePlayerY(-1);
   if (keyCode === 65) player.movePlayerX(-1);
   if (keyCode === 68) player.movePlayerX(1);
   if (keyCode === 83) player.movePlayerY(1);
-  if (keyCode === 32) player.spaceHeld = true;
+  if (keyCode === 86) player.vHeld = true;
   if (keyCode === 80) settings.paused = !settings.paused;
 }
 
 function keyReleased() {
-  //console.log("Released");
+  ////console.log("Released");
   if (keyCode === 87) player.movePlayerY(-1);
   if (keyCode === 65) player.movePlayerX(-1);
   if (keyCode === 68) player.movePlayerX(1);
   if (keyCode === 83) player.movePlayerY(1);
-  if (keyCode === 32) player.spaceHeld = false;
+  if (keyCode === 86) player.vHeld = false;
 }
 
 function mouseClicked() {
-  //console.log("MOUSE CLICKED", mouseX, mouseY);
+  ////console.log("MOUSE CLICKED", mouseX, mouseY);
   player.shoot(mouseX, mouseY);
   // prevent default
   return false;
@@ -165,13 +165,13 @@ drawBasicShots = () => {
 }
 
 drawPortals = () => {
-  //console.log(player.portals);
+  ////console.log(player.portals);
   player.portals.forEach((shot, index) => {
     if (index === 0) fill(255, 140, 0);
     else fill(30, 144, 255);
     if (!shot.moving) {
       if (collideCircleCircle(shot.xPos, shot.yPos, shot.shotWidth, player.xPos, player.yPos, player.playerDiameter) && player.portals.length == 2) {
-        console.log("entered portal");
+        //console.log("entered portal");
         player.enterPortal(index);
       }
       circle(shot.xPos, shot.yPos, shot.shotWidth);
@@ -188,7 +188,7 @@ drawPortals = () => {
 
 function triggerGameOver() {
   if (settings.gameOver) return;
-  console.log("YOU LOSE");
+  //console.log("YOU LOSE");
   settings.gameOver = true;
   updateHighScores(player.playerLevel);
 }
@@ -199,7 +199,7 @@ class Player {
   yPos;
   health;
   damage = 50;
-  spaceHeld = false;
+  vHeld = false;
   maxHealth = 75;
   xpLevel = 0;
   playerLevel = 1;
@@ -249,7 +249,7 @@ class Player {
   }
 
   shoot = (x, y) => {
-    if (this.spaceHeld) {
+    if (this.vHeld) {
       this.shootPortal(x, y);
       return;
     }
@@ -258,7 +258,7 @@ class Player {
   }
 
   enterPortal = (index) => {
-    console.log("entered portal", index);
+    //console.log("entered portal", index);
     let enteredPortal;
     enteredPortal = index === 0 ? this.portals[1] : this.portals[0];
     this.portals = [];
@@ -267,7 +267,7 @@ class Player {
   }
 
   shootPortal = (x, y) => {
-    //console.log("Portal Shot", this.portals.length);
+    ////console.log("Portal Shot", this.portals.length);
     if (this.portals.length > 1) return;
     this.portals.push(new PortalShot(this.xPos, this.yPos, x, y));
   }
@@ -322,7 +322,7 @@ class BasicEnemy {
 
   updateEnemy = () => {
     if (collideCircleCircle(player.xPos, player.yPos, player.playerDiameter, this.xPos, this.yPos, this.enemyDiameter)) {
-      console.log("ATTACK");
+      //console.log("ATTACK");
       player.health -= this.enemyDamage;
       if (player.health <= 0) {
         triggerGameOver();
@@ -337,7 +337,7 @@ class BasicEnemy {
   }
 
   detectHit(damage) {
-    console.log(damage);
+    //console.log(damage);
     this.health -= damage;
     return this.health <= 0;
   }
@@ -358,6 +358,29 @@ class BossEnemy extends BasicEnemy {
   drawEnemy = () => {
     fill((this.health / this.maxHealth) * 200, 200, 0);
     circle(this.xPos, this.yPos, this.enemyDiameter);
+  }
+
+  updateEnemy = () => {
+    if (collideCircleCircle(player.xPos, player.yPos, player.playerDiameter, this.xPos, this.yPos, this.enemyDiameter)) {
+      //console.log("ATTACK");
+      player.health -= this.enemyDamage;
+      if (player.health <= 0) {
+        triggerGameOver();
+      }
+    }
+    this.xPos += Math.sign(player.xPos - this.xPos) * this.enemySpeed;
+    this.yPos += Math.sign(player.yPos - this.yPos) * this.enemySpeed;
+
+    if (new Date().getTime() % 1000 === 1) {
+      let random = (Math.random() - .5) * 500;
+      console.log(random);
+      this.xPos += random;
+      this.yPos += random;
+    }
+    if (this.yPos > height) this.yPos = height;
+    else if (this.yPos < 0) this.yPos = 0;
+    if (this.xPos > width) this.xPos = width;
+    else if (this.xPos < 0) this.xPos = 0;
   }
 }
 
@@ -389,7 +412,7 @@ class PortalShot {
   shotSpeed = 5;
   shotWidth = 40;
   constructor(pX, pY, sX, sY) {
-    console.log(pX, pY, sX, sY);
+    //console.log(pX, pY, sX, sY);
     this.xPos = pX;
     this.yPos = pY;
     const radians = Math.atan2(sY - pY, sX - pX);
