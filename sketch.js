@@ -200,7 +200,7 @@ class Player {
   health;
   damage = 50;
   spaceHeld = false;
-  maxHealth = 100;
+  maxHealth = 75;
   xpLevel = 0;
   playerLevel = 1;
   xpLevelNext = 100;
